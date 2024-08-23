@@ -18,3 +18,29 @@ model Post {
 
     @@index([name])
 }
+
+model User {
+    id        Int      @id @default(autoincrement())
+    name      String   @unique
+    password  String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    deleted   Boolean  @default(false)
+}
+
+model Message {
+    id        Int      @id @default(autoincrement())
+    roomId    Int
+    senderId  Int
+    content   String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model Room {
+    id        Int      @id @default(autoincrement())
+    ownerId   Int
+    name      String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}

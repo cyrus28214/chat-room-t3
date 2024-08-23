@@ -9,8 +9,10 @@
 import { initTRPC } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
-
 import { db } from "~/server/db";
+import { type NextRequest } from "next/server";
+import { verifyToken } from "~/utils/crypto";
+import { type SetCookie } from "~/utils/type";
 
 /**
  * 1. CONTEXT
@@ -24,7 +26,11 @@ import { db } from "~/server/db";
  *
  * @see https://trpc.io/docs/server/context
  */
-export const createTRPCContext = async (opts: { headers: Headers }) => {
+export const createTRPCContext = async (opts: {
+  headers: Headers,
+  req?: NextRequest,
+  setCookie?: (name: string, value: string) => void
+}) => {
   return {
     db,
     ...opts,
@@ -96,6 +102,24 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
   return result;
 });
 
+const authMiddleware = t.middleware(async ({ ctx, next }) => {
+  const token = ctx.req?.cookies?.get("token")?.value;
+  if (!token) throw new Error("未登录");
+  console.log(token)
+  try {
+    const verified = verifyToken(token);
+    return await next({ ctx: { auth: verified } });
+  } catch {
+    throw new Error(`无效的token`);
+  }
+});
+
+const checkContextMiddleware = t.middleware(async ({ ctx, next }) => {
+  const setCookie = ctx.setCookie
+  if (!setCookie) throw new Error("Context is not valid");
+  return await next({ ctx: { setCookie } });
+});
+
 /**
  * Public (unauthenticated) procedure
  *
@@ -103,4 +127,5 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
  * guarantee that a user querying is authorized, but you can still access user session data if they
  * are logged in.
  */
-export const publicProcedure = t.procedure.use(timingMiddleware);
+export const publicProcedure = t.procedure.use(checkContextMiddleware).use(timingMiddleware);
+export const authProcedure = publicProcedure.use(authMiddleware);
