@@ -20,27 +20,37 @@ model Post {
 }
 
 model User {
-    id        Int      @id @default(autoincrement())
-    name      String   @unique
+    id        Int       @id @default(autoincrement())
+    name      String    @unique
     password  String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    deleted   Boolean  @default(false)
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    deleted   Boolean   @default(false)
+    Message   Message[]
+    Room      Room[]
+
+    @@index([name])
 }
 
 model Message {
     id        Int      @id @default(autoincrement())
+    room      Room     @relation(fields: [roomId], references: [id])
     roomId    Int
+    sender    User     @relation(fields: [senderId], references: [id])
     senderId  Int
     content   String
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+
+    @@index([roomId])
 }
 
 model Room {
-    id        Int      @id @default(autoincrement())
+    id        Int       @id @default(autoincrement())
+    owner     User      @relation(fields: [ownerId], references: [id])
     ownerId   Int
     name      String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    Message   Message[]
 }

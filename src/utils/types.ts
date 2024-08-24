@@ -2,15 +2,19 @@ import { type ReadonlyRequestCookies } from "next/dist/server/web/spec-extension
 export type SetCookie = ReadonlyRequestCookies['set'];
 
 export interface Message {
-    messageId: number;
+    id: number;
     roomId: number;
     sender: string;
     content: string;
-    time: number;
+    time: string; // ISO string
 }
 
 export interface RoomPreviewInfo {
-    roomId: number;
-    roomName: string;
-    lastMessage: Message | null;
+    id: number;
+    name: string;
+}
+
+export interface User {
+    id: number;
+    name: string;
 }
