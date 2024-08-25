@@ -1,24 +1,27 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { SolidPlus } from "../_components/icons";
+import { SolidPlus, SolidUser } from "../_components/icons";
 import RoomAddModal from "../_components/RoomAddModal";
 import { RoomItem, RoomList } from "../_components/RoomList";
 import cn from "classnames";
 import { api } from "~/trpc/react";
 import NoticeModal from "../_components/modal/NoticeModal";
 import ConfirmModal from "../_components/modal/ConfirmModal";
-import type { User, RoomPreviewInfo } from "~/utils/types";
+import type { RoomPreviewInfo } from "~/utils/types";
 import { atom, useAtom } from "jotai";
 import { ChatInput } from "../_components/ChatInput";
 import MessageList, { MessageItem } from "../_components/MessageList";
+import { useRouter } from "next/navigation";
+import ThemeToggler from "../_components/ThemeToggler";
+import { atomWithStorage } from "jotai/utils";
 
 interface Modal {
     title: string;
     message: string
 };
 const modalAtom = atom<Modal | null>(null);
-const activeRoomAtom = atom<RoomPreviewInfo | null>(null);
+const activeRoomAtom = atomWithStorage<RoomPreviewInfo | null>("activeRoom", null);
 
 function useRoomApi() {
     const { data: rooms, refetch: refetchRooms } = api.im.getRooms.useQuery();
@@ -49,25 +52,15 @@ function useRoomApi() {
         createRoom,
     }
 }
-function useActiveRoom() {
-    const [activeRoom, setActiveRoom] = useAtom(activeRoomAtom);
-    const { rooms } = useRoomApi();
-    useEffect(() => {
-        if (rooms?.find((room) => room.id === activeRoom?.id)) {
-            return;
-        }
-        setActiveRoom(null);
-    }, [rooms, activeRoom, setActiveRoom]); //在房间列表更新的同时，检查当前房间是否仍然存在
-    return [activeRoom, setActiveRoom] as const;
-}
 
 function SideBar() {
     const toolItemClass = 'menu-item tooltip';
     const toolBtnClass = 'btn btn-sm btn-circle btn-ghost p-1';
 
     const [roomAddShow, setRoomAddShow] = useState(false);
-    const [activeRoom, setActiveRoom] = useActiveRoom();
+    const [activeRoom, setActiveRoom] = useAtom(activeRoomAtom);
     const roomApi = useRoomApi();
+    const router = useRouter();
 
     const [deleteRoom, setDeleteRoom] = useState<RoomPreviewInfo | null>(null);
     const [deleteRoomNameMessage, setDeleteRoomNameMessage] = useState('');
@@ -104,6 +97,17 @@ function SideBar() {
                         e.preventDefault();
                         setRoomAddShow(true);
                     }} />
+            </li>
+            <li className={toolItemClass} data-tip='切换账号'>
+                <SolidUser className={cn(toolBtnClass, 'fill-current')}
+                    onClick={(e) => {
+                        e.preventDefault();
+                        void router.push('/login');
+                    }}
+                />
+            </li>
+            <li className={toolItemClass} data-tip='切换主题'>
+                <ThemeToggler className={cn(toolBtnClass, 'fill-current')} />
             </li>
         </ul>
         <RoomAddModal
@@ -184,13 +188,14 @@ function RoomEntry({ activeRoom }: { activeRoom: RoomPreviewInfo }) {
 export default function ChatRoomPage() {
     const [activeRoom] = useAtom(activeRoomAtom);
     const [modal, setModal] = useAtom(modalAtom);
+    const { rooms } = useRoomApi();
 
     return <div className='h-screen flex overflow-hidden'>
         <div className='h-full w-56 md:w-72 lg:w-96'>
             <SideBar />
         </div>
         <div className='h-full flex-1 min-w-0'>
-            {activeRoom && <RoomEntry activeRoom={activeRoom} />}
+            {activeRoom && rooms?.find((room) => room.id === activeRoom.id) && <RoomEntry activeRoom={activeRoom} />}
         </div>
         {modal && <NoticeModal
             show={modal !== null}

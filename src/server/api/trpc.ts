@@ -12,7 +12,6 @@ import { ZodError } from "zod";
 import { db } from "~/server/db";
 import { type NextRequest } from "next/server";
 import { verifyToken } from "~/utils/crypto";
-import { type SetCookie } from "~/utils/type";
 
 /**
  * 1. CONTEXT

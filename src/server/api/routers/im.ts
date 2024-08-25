@@ -6,6 +6,9 @@ export const imRouter = createTRPCRouter({
     getRooms: authProcedure
         .query(async ({ ctx }) => {
             const rooms = await ctx.db.room.findMany({
+                where: {
+                    deletedAt: null
+                },
                 orderBy: { createdAt: "desc" },
             });
             return rooms.map((room) => ({
@@ -43,8 +46,11 @@ export const imRouter = createTRPCRouter({
             if (room.ownerId !== user) {
                 throw new Error("你不是房主，不能删除房间");
             }
-            await ctx.db.room.delete({
+            await ctx.db.room.update({
                 where: { id },
+                data: {
+                    deletedAt: new Date()
+                }
             });
             return null;
         }),

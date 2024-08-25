@@ -52,5 +52,6 @@ model Room {
     name      String
     createdAt DateTime  @default(now())
     updatedAt DateTime  @updatedAt
+    deletedAt DateTime?
     Message   Message[]
 }

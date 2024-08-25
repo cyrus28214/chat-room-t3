@@ -1,29 +1,26 @@
-# Create T3 App
+# 聊天室
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+XLab 全栈项目，使用NextJS重写了[cyrus28214/chat-room](https://github.com/cyrus28214/chat-room)
 
-## What's next? How do I make an app with this?
+## 技术栈
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+- 基于 NextJS + TypeScript 搭建
+- 使用 Tailwindcss + DaisyUI 进行样式设计
+- 使用 React Query 实现数据请求和缓存
+- 后端部分使用 tRPC + Prisma ORM 构建完整的类型安全API
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+## 项目特点
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+- 支持白天和黑夜模式切换
+- 点击按钮后有友好的模态框提示信息
+- 为图标按钮添加了Tooltip提示信息
+- 使用 `localStorage` 缓存了用户信息，刷新页面后依然可以保持状态
+- 完善的类型标注，充分利用了 TypeScript 的强大功能，几乎没有`any`。
 
-## Learn More
+## 效果展示
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+![](./images/preview1.png)
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+![](./images/preview2.png)
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
-
-## How do I deploy this?
-
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+![](./images/preview3.png)
