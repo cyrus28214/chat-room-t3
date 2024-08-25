@@ -1,6 +1,7 @@
 # 聊天室
 
 XLab 全栈项目，使用NextJS重写了[cyrus28214/chat-room](https://github.com/cyrus28214/chat-room)
+在线预览[https://chat-room-t3-yhyu.vercel.app/](https://chat-room-t3-yhyu.vercel.app/)
 
 ## 技术栈
 
